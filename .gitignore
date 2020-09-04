@@ -29,3 +29,8 @@
 /config/master.key
 !/db/mysql/
 !.keep
+
+# Editor
+.idea
+*.iml
+.vscode
