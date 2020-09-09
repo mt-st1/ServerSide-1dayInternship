@@ -6,9 +6,10 @@ ruby '2.6.5'
 gem 'aws-sdk-s3'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'coffee-rails', '~> 4.2'
+gem 'itaiji' # 異体字の表記ゆれ対応
 gem 'jbuilder', '~> 2.5'
-gem 'kakasi'
-gem 'levenshtein'
+gem 'kakasi' # 漢字/ひらがな/カタカナの表記ゆれ対応
+gem 'levenshtein' # 編集距離 (メールアドレスの類似度算出)
 gem 'mysql2', '>= 0.4.4', '< 0.6.0'
 gem 'puma', '~> 3.11'
 gem 'rails', '~> 5.2.4', '>= 5.2.4.3'
