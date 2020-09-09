@@ -6,11 +6,11 @@ class CardsController < ApplicationController
 
   def create
     ActiveRecord::Base.transaction do
-      if (aggregatable_card = Person.aggregatable_card(card_params[:email], card_params[:name], card_params[:title]))
-        person = Person.find(aggregatable_card.person_id)
-      else
-        person = Person.create
-      end
+      person = if (aggregatable_card = Person.aggregatable_card(card_params[:email], card_params[:name], card_params[:title]))
+                 Person.find(aggregatable_card.person_id)
+               else
+                 Person.create
+               end
       card = person.cards.create!(card_params)
       SampleCardImageUploader.upload(card)
     end
