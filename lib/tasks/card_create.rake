@@ -12,6 +12,18 @@ namespace :card_create do
 
     puts '全てのリクエストが完了しました。'.green
   end
+
+  task call_card_create_api3: :environment do
+    each_curl_request('db/additional_data3.csv')
+
+    puts '全てのリクエストが完了しました。'.green
+  end
+
+  task call_card_create_api4: :environment do
+    each_curl_request('db/additional_data4.csv')
+
+    puts '全てのリクエストが完了しました。'.green
+  end
 end
 
 def each_curl_request(csv_file)

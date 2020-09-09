@@ -1,11 +1,15 @@
 class Card < ApplicationRecord
-  belongs_to :person
-  include CalculationTitleScore
   require 'levenshtein'
+  require 'kakasi'
+  require 'itaiji'
+  include CalculationTitleScore
 
-  BLANK_REGEXP = /[\s　]/.freeze
+  belongs_to :person
+
+  SPACE_CHAR_REGEXP = /[\s　]/.freeze
   TITLE_RELEVANCE_THRESHOLD = 80
   SIMILARITY_DISTANCE_THRESHOLD = 2
+  using Itaiji::Conversions
 
   # 名寄せ可能かどうか
   def aggregatable?(email, name, title)
@@ -24,23 +28,32 @@ class Card < ApplicationRecord
   end
 
   def same_person_name?(name)
-    name_matched?(name) || last_name_matched?(name)
+    name_matched?(name) || first_name_matched?(name)
   end
 
   def name_matched?(name)
-    trim_all_space_char(self.name) == trim_all_space_char(name)
+    trim_all_space_chars(self.name).downcase == trim_all_space_chars(name).downcase
   end
 
-  def last_name_matched?(name)
-    splitted_target_names = self.name.split(BLANK_REGEXP)
-    splitted_names = name.split(BLANK_REGEXP)
+  def first_name_matched?(name)
+    splitted_names = self.name.split(SPACE_CHAR_REGEXP)
+    splitted_target_names = name.split(SPACE_CHAR_REGEXP)
 
-    return false unless splitted_target_names.size == 2 && splitted_names.size == 2
+    return false if splitted_names.empty? || splitted_target_names.empty?
 
-    splitted_target_names.last == splitted_names.last
+    # 英語の場合
+    if /\A[a-zA-Z]+\z/.match?(splitted_names.first) && /\A[a-zA-Z]+\z/.match?(splitted_target_names.first)
+      return splitted_names.first.downcase == splitted_target_names.first.downcase
+    end
+
+    convert_japanese_to_hiragana(splitted_names.last) == convert_japanese_to_hiragana(splitted_target_names.last)
   end
 
-  def trim_all_space_char(str)
+  def trim_all_space_chars(str)
     str.gsub(/[\s　]*/, '')
+  end
+
+  def convert_japanese_to_hiragana(str)
+    Kakasi.kakasi('-JH -KH', str.to_seijitai)
   end
 end
