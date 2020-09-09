@@ -12,7 +12,7 @@ class Card < ApplicationRecord
   using Itaiji::Conversions
 
   # 名寄せ可能かどうか
-  def aggregatable?(email, name, title)
+  def aggregatable?(name:, email:, title:)
     # メールアドレスが類似している かつ (表記ゆれを考慮した名前が一致 または 職業関連度が高い)
     similar_email?(email) && (same_person_name?(name) || relevant_title?(title))
   end
@@ -49,10 +49,12 @@ class Card < ApplicationRecord
     convert_japanese_to_hiragana(splitted_names.last) == convert_japanese_to_hiragana(splitted_target_names.last)
   end
 
+  # 半角スペース/全角スペースを取り除く
   def trim_all_space_chars(str)
     str.gsub(/[\s　]*/, '')
   end
 
+  # 漢字/カタカナをひらがなに変換
   def convert_japanese_to_hiragana(str)
     Kakasi.kakasi('-JH -KH', str.to_seijitai)
   end
