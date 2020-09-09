@@ -2,9 +2,12 @@ class Card < ApplicationRecord
   require 'levenshtein'
   require 'kakasi'
   require 'itaiji'
+  include Searchable
   include CalculationTitleScore
 
   belongs_to :person
+
+  define_like_search :name, :organization
 
   SPACE_CHAR_REGEXP = /[\s　]/.freeze
   TITLE_RELEVANCE_THRESHOLD = 80
