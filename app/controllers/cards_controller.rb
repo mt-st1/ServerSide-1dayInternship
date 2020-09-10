@@ -6,13 +6,7 @@ class CardsController < ApplicationController
 
   def create
     ActiveRecord::Base.transaction do
-      person = if (aggregatable_person = Person.aggregatable_person(name: card_params[:name],
-                                                                    email: card_params[:email],
-                                                                    title: card_params[:title]))
-                 aggregatable_person
-               else
-                 Person.create
-               end
+      person = aggregatable_person || Person.create
       card = person.cards.create!(card_params)
       SampleCardImageUploader.upload(card)
     end
@@ -24,6 +18,12 @@ class CardsController < ApplicationController
 
   def card_params
     params.permit(:name, :email, :organization, :department, :title)
+  end
+
+  def aggregatable_person
+    Person.aggregatable_person(name: card_params[:name],
+                               email: card_params[:email],
+                               title: card_params[:title])
   end
 
   def s3_object
